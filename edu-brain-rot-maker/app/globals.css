@@ -90,3 +90,12 @@ on Clerk's Discord */
 .hide-lastpass-icon [data-lastpass-icon-root="true"] {
   display: none;
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
