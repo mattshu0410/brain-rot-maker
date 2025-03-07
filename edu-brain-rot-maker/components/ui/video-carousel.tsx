@@ -24,6 +24,15 @@ export default function VideoCarousel({
     }
   };
 
+  // If no videos, show a loading indicator
+  if (!videos || videos.length === 0) {
+    return (
+      <div className="w-full mx-auto relative py-4 flex justify-center items-center h-[225px] bg-gray-200 rounded-lg">
+        <p>Loading videos...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full mx-auto relative py-4">
       <Swiper

@@ -2,7 +2,7 @@
 
 import { DashboardButtons } from "@/app/DashboardButtons";
 import { StickyHeader } from "@/components/layout/sticky-header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Suspense } from "react";
 
 import { Loader2 } from "lucide-react";
@@ -29,15 +29,24 @@ const generateNBAPlayer = () => {
   };
 };
 
-const topVideos = Array(5).fill(null).map(generateNBAPlayer);
-
-const celebrityVideos = Array(5).fill(null).map(generateNBAPlayer);
+// Don't pre-generate the data here - will cause hydration mismatch
+// Instead, we'll generate it client-side only
 
 export default function Home() {
   const [loadingText, setLoadingText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedTopVideo, setSelectedTopVideo] = useState<number | null>(null);
   const [selectedCelebrity, setSelectedCelebrity] = useState(0);
+  // Generate videos only on client-side
+  const [topVideos, setTopVideos] = useState<any[]>([]);
+  const [celebrityVideos, setCelebrityVideos] = useState<any[]>([]);
+  
+  // Use useEffect to generate videos on client side only
+  useEffect(() => {
+    // Generate videos only on client-side to avoid hydration mismatch
+    setTopVideos(Array(5).fill(null).map(generateNBAPlayer));
+    setCelebrityVideos(Array(5).fill(null).map(generateNBAPlayer));
+  }, []);
 
   const handleGenerate = () => {
     setIsGenerating(true);
@@ -62,7 +71,9 @@ export default function Home() {
   };
 
   const handleTopVideoChange = (index: number) => {
-    setSelectedTopVideo(topVideos[index].id);
+    if (topVideos.length > index) {
+      setSelectedTopVideo(topVideos[index].id);
+    }
   };
 
   return (
@@ -91,8 +102,8 @@ export default function Home() {
             />
             <p className="text-center mt-4">
               Selected Top Video:{" "}
-              {selectedTopVideo !== null
-                ? topVideos.find((v) => v.id === selectedTopVideo)?.name
+              {selectedTopVideo !== null && topVideos.length > 0
+                ? topVideos.find((v) => v.id === selectedTopVideo)?.name || "None"
                 : "None"}
             </p>
           </div>
